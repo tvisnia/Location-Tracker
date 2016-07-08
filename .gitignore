@@ -10,6 +10,7 @@ gen/
 # Local configuration file (sdk path, etc)
 *.properties
 !gradle/wrapper/gradle-wrapper.properties
+!gradle.properties
 # Eclipse project files
 .classpath
 .project
