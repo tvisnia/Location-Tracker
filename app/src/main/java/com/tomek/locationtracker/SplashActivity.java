@@ -12,10 +12,8 @@ import android.util.Log;
 public class SplashActivity extends AppCompatActivity {
 
     private static final long SPLASH_DISPLAY_LENGTH = 2000;
-    private static final String TAG_HANDLER = "LaunchDelayHandler : ";
-    private static final java.lang.String TAG_ONSTOP = "onStopped";
     private Handler launchScreenDelayHandler;
-    private Runnable activityDelayRunnable;
+    private static Runnable activityDelayRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +28,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        Log.d(TAG_HANDLER, TAG_ONSTOP);
+        Log.d(SplashActivity.this.getClass().getSimpleName(), "onStopped");
         launchScreenDelayHandler.removeCallbacks(activityDelayRunnable);
         finish();
         super.onStop();
