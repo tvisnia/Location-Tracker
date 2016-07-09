@@ -56,4 +56,12 @@ public class SplashActivity extends AppCompatActivity {
         mHandler.removeCallbacks(activityDelayRunnable);
         finish();
     }
+
+    @Override
+    protected void onStop() {
+        Log.d(SplashActivity.this.getClass().getSimpleName(), getString(R.string.onStop));
+        mHandler.removeCallbacks(activityDelayRunnable);
+        finish();
+        super.onStop();
+    }
 }
