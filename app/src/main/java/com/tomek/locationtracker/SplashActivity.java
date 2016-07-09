@@ -1,9 +1,14 @@
 package com.tomek.locationtracker;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by tomek on 08.07.16.
@@ -11,19 +16,44 @@ import android.support.v7.app.AppCompatActivity;
 public class SplashActivity extends AppCompatActivity {
 
     private static final long SPLASH_DISPLAY_LENGTH = 2000;
+    private static Context context;
+
+    private static class MyHandler extends Handler {
+        private final WeakReference<SplashActivity> mActivity;
+
+        public MyHandler(SplashActivity activity) {
+            mActivity = new WeakReference<SplashActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            SplashActivity activity = mActivity.get();
+            if (activity != null) {
+                Log.d(activity.getClass().getSimpleName(), activity.getString(R.string.on_handled));
+            }
+        }
+    }
+
+    private final MyHandler mHandler = new MyHandler(SplashActivity.this);
+    private static final Runnable activityDelayRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Intent intent = new Intent(context, MainActivity.class);
+            context.startActivity(intent);
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                /* Create an Intent that will start the Menu-Activity. */
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        }, SPLASH_DISPLAY_LENGTH);
+        context = this;
+        mHandler.postDelayed(activityDelayRunnable, SPLASH_DISPLAY_LENGTH);
     }
 
+    @Override
+    public void onBackPressed() {
+        mHandler.removeCallbacks(activityDelayRunnable);
+        finish();
+    }
 }
