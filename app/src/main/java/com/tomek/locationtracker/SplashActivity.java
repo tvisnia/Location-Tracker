@@ -52,19 +52,11 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        stopHandler();
-    }
-
-    @Override
     protected void onStop() {
         Log.d(SplashActivity.this.getClass().getSimpleName(), getString(R.string.onStop));
-        stopHandler();
-        super.onStop();
-    }
 
-    private void stopHandler() {
         mHandler.removeCallbacks(activityDelayRunnable);
         finish();
+        super.onStop();
     }
 }
