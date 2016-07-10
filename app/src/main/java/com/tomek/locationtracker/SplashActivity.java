@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference;
 public class SplashActivity extends AppCompatActivity {
 
     private static final long SPLASH_DISPLAY_LENGTH = 2000;
-    private Handler launchScreenDelayHandler = new Handler();
+    private final Handler launchScreenDelayHandler = new Handler();
     private DelayRunnable activityDelayRunnable;
 
     @Override
@@ -34,18 +34,19 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private static class DelayRunnable implements Runnable {
-        final WeakReference<Context> ctxReference;
+        private final WeakReference<Context> contextReference;
 
         public DelayRunnable(SplashActivity activity) {
-            ctxReference = new WeakReference<>(activity.getApplicationContext());
+            contextReference = new WeakReference<>(activity.getApplicationContext());
         }
 
         @Override
         public void run() {
-            if (ctxReference.get() != null) {
-                Intent intent = new Intent(ctxReference.get(), MainActivity.class);
+            Context applicationContext = contextReference.get();
+            if (applicationContext != null) {
+                Intent intent = new Intent(applicationContext, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                ctxReference.get().startActivity(intent);
+                applicationContext.startActivity(intent);
             }
         }
     }
