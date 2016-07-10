@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
@@ -27,7 +26,6 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        Log.d(SplashActivity.this.getClass().getSimpleName(), "onStopped");
         launchScreenDelayHandler.removeCallbacks(activityDelayRunnable);
         finish();
         super.onStop();
@@ -42,11 +40,11 @@ public class SplashActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            Context applicationContext = contextReference.get();
-            if (applicationContext != null) {
-                Intent intent = new Intent(applicationContext, MainActivity.class);
+            Context context = contextReference.get();
+            if (context != null) {
+                Intent intent = new Intent(context, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                applicationContext.startActivity(intent);
+                context.startActivity(intent);
             }
         }
     }
