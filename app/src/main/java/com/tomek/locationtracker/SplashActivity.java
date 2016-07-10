@@ -15,29 +15,13 @@ import java.lang.ref.WeakReference;
 public class SplashActivity extends AppCompatActivity {
 
     private static final long SPLASH_DISPLAY_LENGTH = 2000;
-    private Handler launchScreenDelayHandler;
-    private ActivityDelay activityDelayRunnable;
-    private static class ActivityDelay implements Runnable {
-        final WeakReference<Context> ctxReference;
-
-        public ActivityDelay(SplashActivity activity) {
-            ctxReference = new WeakReference<>(activity.getApplicationContext());
-        }
-
-        @Override
-        public void run() {
-            Intent intent = new Intent(ctxReference.get(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            ctxReference.get().startActivity(intent);
-        }
-    }
+    private Handler launchScreenDelayHandler = new Handler();
+    private DelayRunnable activityDelayRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        launchScreenDelayHandler = new Handler();
-        activityDelayRunnable = new ActivityDelay(this);
+        activityDelayRunnable = new DelayRunnable(this);
         launchScreenDelayHandler.postDelayed(activityDelayRunnable, SPLASH_DISPLAY_LENGTH);
     }
 
@@ -47,5 +31,22 @@ public class SplashActivity extends AppCompatActivity {
         launchScreenDelayHandler.removeCallbacks(activityDelayRunnable);
         finish();
         super.onStop();
+    }
+
+    private static class DelayRunnable implements Runnable {
+        final WeakReference<Context> ctxReference;
+
+        public DelayRunnable(SplashActivity activity) {
+            ctxReference = new WeakReference<>(activity.getApplicationContext());
+        }
+
+        @Override
+        public void run() {
+            if (ctxReference.get() != null) {
+                Intent intent = new Intent(ctxReference.get(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ctxReference.get().startActivity(intent);
+            }
+        }
     }
 }
