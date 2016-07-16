@@ -8,7 +8,7 @@ import android.os.Build;
 public class ApiChecker {
     private static final int API_LEVEL = Build.VERSION.SDK_INT;
 
-    public static boolean KitkatOrNewer() {
+    public static boolean kitkatOrNewer() {
         return API_LEVEL >= Build.VERSION_CODES.KITKAT;
     }
 }
