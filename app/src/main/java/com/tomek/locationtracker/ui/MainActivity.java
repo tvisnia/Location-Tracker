@@ -1,7 +1,6 @@
-package com.tomek.locationtracker;
+package com.tomek.locationtracker.ui;
 
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.tomek.locationtracker.R;
+import com.tomek.locationtracker.util.LocationHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,14 +28,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private boolean isLocationEnabled() {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-    }
-
     private void checkLocationServices() {
-        if (!isLocationEnabled()) {
+        if (!LocationHelper.isLocationEnabled(this)) {
             new MaterialDialog.Builder(this)
                     .title(R.string.dialog_title)
                     .content(R.string.dialog_content)
