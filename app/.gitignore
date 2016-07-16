@@ -1,4 +1,5 @@
 build/**/*.*
+/build/intermediates/res/merged/debug/raw/*
 build/**/*.xml
 !*.apk
 
