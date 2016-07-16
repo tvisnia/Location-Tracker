@@ -36,5 +36,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "com.android.support:design:$supportLibraryVersion"
     compile "com.afollestad:material-dialogs:$materialDialogVersion"
-    compile "com.google.android.gms:play-services:$googlePlayServicesVersion"
+    compile "com.google.android.gms:play-services-location:$googlePlayServicesVersion"
 }
