@@ -3,4 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="on_handled">onHandled</string>
     <string name="onStop">onStop</string>
+    <string name="dialog_title">GPS wyłączony</string>
+    <string name="dialog_content">Do prawidłowego działania aplikacji wymagane jest włączenie modułu GPS.</string>
+    <string name="agree">Włącz</string>
+    <string name="disagree">Anuluj</string>
 </resources>

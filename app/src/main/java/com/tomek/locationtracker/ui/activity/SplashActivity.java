@@ -1,4 +1,4 @@
-package com.tomek.locationtracker;
+package com.tomek.locationtracker.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
