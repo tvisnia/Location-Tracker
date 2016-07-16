@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        checkLocationServices();
         super.onResume();
+        checkLocationServices();
     }
 
     private void checkLocationServices() {
