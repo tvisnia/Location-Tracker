@@ -29,10 +29,11 @@ import static com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCU
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String LAST_LOCATION_TAG = "Last location: ";
+    private CoordinatorLayout coordinatorLayout;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
-    public static final String LAST_LOCATION_TAG = "Last location : ";
-    private CoordinatorLayout coordinatorLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,17 +64,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStop() {
         if (googleApiClient.isConnected()) {
+            stopLocationUpdates();
             googleApiClient.disconnect();
         }
         super.onStop();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d(TAG, "onPaused");
-        stopLocationUpdates();
-        super.onPause();
-
     }
 
     private void checkLocationServices() {
@@ -117,8 +111,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.d(TAG, "onConnected");
         lastLocation = LocationHelper.getLastKnownLocation(googleApiClient);
         if (lastLocation != null) {
-            Log.d(LAST_LOCATION_TAG, String.valueOf
-                    (lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
             FeedbackHelper.showShortSnackbar(
                     coordinatorLayout,
                     LAST_LOCATION_TAG + String.valueOf(lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
@@ -164,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onLocationChanged(Location location) {
-            LocationHelper.updateLastLocation(lastLocation, location);
+            lastLocation = location;
             FeedbackHelper.showShortSnackbar(
                     coordinatorLayout,
                     "onLocationChanged : " + String.valueOf(location.getLatitude()) + " , " + String.valueOf(location.getLongitude()));

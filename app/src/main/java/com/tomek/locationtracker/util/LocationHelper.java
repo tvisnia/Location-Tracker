@@ -24,9 +24,4 @@ public class LocationHelper {
     public static Location getLastKnownLocation(GoogleApiClient googleApiClient) {
         return LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
     }
-
-    public static void updateLastLocation(Location previousLocation, Location currentLocation) {
-        previousLocation.setLatitude(currentLocation.getLatitude());
-        previousLocation.setLongitude(currentLocation.getLongitude());
-    }
 }

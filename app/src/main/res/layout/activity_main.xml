@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/coordinator_layout"
-    android:keepScreenOn="true"
+
     tools:context=".ui.activity.MainActivity">
 
     <android.support.design.widget.AppBarLayout
