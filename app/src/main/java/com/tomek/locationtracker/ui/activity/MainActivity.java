@@ -21,9 +21,6 @@ import com.tomek.locationtracker.R;
 import com.tomek.locationtracker.util.FeedbackHelper;
 import com.tomek.locationtracker.util.LocationHelper;
 
-import java.text.DateFormat;
-import java.util.Date;
-
 import static com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -45,20 +42,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         buildGoogleApiClient();
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkLocationServices();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
+        checkLocationServices();
         if (googleApiClient != null) {
             googleApiClient.connect();
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        checkLocationServices();
+        super.onResume();
     }
 
     @Override
@@ -68,6 +65,54 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             googleApiClient.disconnect();
         }
         super.onStop();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        startLocationUpdates();
+        Log.d(TAG, "onConnected");
+        lastLocation = LocationHelper.getLastKnownLocation(googleApiClient);
+        if (lastLocation != null) {
+            FeedbackHelper.showShortSnackbar(
+                    coordinatorLayout,
+                    LAST_LOCATION_TAG + String.valueOf(lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
+
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "Connection suspended");
+        googleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        String errorMessage = connectionResult.getErrorCode() + ": " + connectionResult.getErrorCode();
+        Log.i(TAG, "Connection failed: " + errorMessage);
+        FeedbackHelper.showLongSnackbar(coordinatorLayout, "Error " + errorMessage);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        lastLocation = location;
+        FeedbackHelper.showShortSnackbar(
+                coordinatorLayout,
+                "onLocationChanged : " + String.valueOf(location.getLatitude()) + " , " + String.valueOf(location.getLongitude()));
+    }
+
+    private void startLocationUpdates() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest
+                .setPriority(PRIORITY_HIGH_ACCURACY)
+                .setInterval(LocationHelper.UPDATE_INTERVAL)
+                .setFastestInterval(LocationHelper.UPDATE_INTERVAL / 2)
+                .setSmallestDisplacement(LocationHelper.DISPLACEMENT);
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+    }
+
+    private void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
     }
 
     private void checkLocationServices() {
@@ -104,69 +149,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        startLocationUpdates();
-        Log.d(TAG, "onConnected");
-        lastLocation = LocationHelper.getLastKnownLocation(googleApiClient);
-        if (lastLocation != null) {
-            FeedbackHelper.showShortSnackbar(
-                    coordinatorLayout,
-                    LAST_LOCATION_TAG + String.valueOf(lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
-
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAG, "Connection suspended");
-        googleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        String errorMessage = connectionResult.getErrorCode() + ": " + connectionResult.getErrorCode();
-        Log.i(TAG, "Connection failed: " + errorMessage);
-        FeedbackHelper.showLongSnackbar(coordinatorLayout, "Error " + errorMessage);
-    }
-
-
     private void buildGoogleApiClient() {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-    }
-
-    private void startLocationUpdates() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest
-                .setPriority(PRIORITY_HIGH_ACCURACY)
-                .setInterval(LocationHelper.UPDATE_INTERVAL)
-                .setFastestInterval(LocationHelper.UPDATE_INTERVAL / 2)
-                .setSmallestDisplacement(LocationHelper.DISPLACEMENT);
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
-
-    private void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-            lastLocation = location;
-            FeedbackHelper.showShortSnackbar(
-                    coordinatorLayout,
-                    "onLocationChanged : " + String.valueOf(location.getLatitude()) + " , " + String.valueOf(location.getLongitude()));
-        String lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        updateUI();
-    }
-
-    private void updateUI() {
-        // update Recycler View with locations' list
-        // method to be developed further on next branch (display-location)
     }
 }
 

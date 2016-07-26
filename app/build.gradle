@@ -29,6 +29,7 @@ ext {
     supportLibraryVersion = '22.2.1'
     materialDialogVersion   = '0.7.8.1'
     googlePlayServicesVersion ='8.4.0'
+    prettytime = "4.0.0.Final"
 }
 
 dependencies {
@@ -37,4 +38,5 @@ dependencies {
     compile "com.android.support:design:$supportLibraryVersion"
     compile "com.afollestad:material-dialogs:$materialDialogVersion"
     compile "com.google.android.gms:play-services-location:$googlePlayServicesVersion"
+
 }

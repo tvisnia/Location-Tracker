@@ -7,7 +7,7 @@ import android.view.View;
  * Created by tomek on 21.07.16.
  * <p>
  * An util class for easy access to Android components used to provide a graphical
- * feedback about operation (Toast & Snackbar)
+ * feedback about operation using Snackbar
  **/
 public class FeedbackHelper {
 
