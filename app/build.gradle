@@ -28,7 +28,7 @@ android {
 ext {
     supportLibraryVersion = '22.2.1'
     materialDialogVersion   = '0.7.8.1'
-    googlePlayServicesVersion ='7.0.0'
+    googlePlayServicesVersion ='8.4.0'
 }
 
 dependencies {
@@ -37,4 +37,5 @@ dependencies {
     compile "com.android.support:design:$supportLibraryVersion"
     compile "com.afollestad:material-dialogs:$materialDialogVersion"
     compile "com.google.android.gms:play-services-location:$googlePlayServicesVersion"
+
 }
