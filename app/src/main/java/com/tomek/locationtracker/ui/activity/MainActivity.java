@@ -18,8 +18,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.tomek.locationtracker.R;
-import com.tomek.locationtracker.util.FeedbackHelper;
 import com.tomek.locationtracker.util.LocationHelper;
+import com.tomek.locationtracker.util.SnackbarUtils;
 
 import static com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY;
 
@@ -49,13 +49,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (googleApiClient != null) {
             googleApiClient.connect();
         }
-
     }
 
     @Override
     protected void onResume() {
-        checkLocationServices();
         super.onResume();
+        checkLocationServices();
     }
 
     @Override
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.d(TAG, "onConnected");
         lastLocation = LocationHelper.getLastKnownLocation(googleApiClient);
         if (lastLocation != null) {
-            FeedbackHelper.showShortSnackbar(
+            SnackbarUtils.showShortSnackbar(
                     coordinatorLayout,
                     LAST_LOCATION_TAG + String.valueOf(lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
 
@@ -90,15 +89,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         String errorMessage = connectionResult.getErrorCode() + ": " + connectionResult.getErrorCode();
         Log.i(TAG, "Connection failed: " + errorMessage);
-        FeedbackHelper.showLongSnackbar(coordinatorLayout, "Error " + errorMessage);
+        SnackbarUtils.showLongSnackbar(coordinatorLayout, "Error " + errorMessage);
     }
 
     @Override
     public void onLocationChanged(Location location) {
         lastLocation = location;
-        FeedbackHelper.showShortSnackbar(
+        SnackbarUtils.showShortSnackbar(
                 coordinatorLayout,
-                "onLocationChanged : " + String.valueOf(location.getLatitude()) + " , " + String.valueOf(location.getLongitude()));
+                "onLocationChanged : " + String.valueOf(location.getLatitude()) + " , " + String.valueOf(location.getLongitude())
+        );
     }
 
     private void startLocationUpdates() {
