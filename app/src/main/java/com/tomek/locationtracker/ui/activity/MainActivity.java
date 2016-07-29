@@ -7,6 +7,8 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,18 +20,29 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.tomek.locationtracker.R;
+import com.tomek.locationtracker.model.LocationData;
+import com.tomek.locationtracker.ui.recycler.LocationListAdapter;
+import com.tomek.locationtracker.util.Constants;
 import com.tomek.locationtracker.util.LocationHelper;
 import com.tomek.locationtracker.util.SnackbarUtils;
+
+import org.joda.time.DateTime;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String LAST_LOCATION_TAG = "Last location: ";
     private CoordinatorLayout coordinatorLayout;
+    private RecyclerView locationRecycler;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
+    private List<LocationData> locationList;
+    private LocationListAdapter locationAdapter;
 
 
     @Override
@@ -39,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         coordinatorLayout = ((CoordinatorLayout) findViewById(R.id.coordinator_layout));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        initRecyclerView();
         buildGoogleApiClient();
     }
 
@@ -69,27 +83,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle bundle) {
         startLocationUpdates();
-        Log.d(TAG, "onConnected");
+        Log.d(TAG, Constants.TAG_CONNECTED);
         lastLocation = LocationHelper.getLastKnownLocation(googleApiClient);
         if (lastLocation != null) {
             SnackbarUtils.showShortSnackbar(
                     coordinatorLayout,
-                    LAST_LOCATION_TAG + String.valueOf(lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
-
+                    Constants.TAG_LAST_LOCATION + String.valueOf(lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
+            addLocation(lastLocation);
+            locationAdapter.notifyDataSetChanged();
         }
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
-        Log.i(TAG, "Connection suspended");
+        Log.i(TAG, Constants.TAG_CONNECTION_SUSPENDED);
         googleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         String errorMessage = connectionResult.getErrorCode() + ": " + connectionResult.getErrorCode();
-        Log.i(TAG, "Connection failed: " + errorMessage);
-        SnackbarUtils.showLongSnackbar(coordinatorLayout, "Error " + errorMessage);
+        Log.i(TAG, Constants.TAG_CONNECTION_FAILED + errorMessage);
+        SnackbarUtils.showLongSnackbar(coordinatorLayout, Constants.TAG_ERROR + errorMessage);
     }
 
     @Override
@@ -97,17 +112,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         lastLocation = location;
         SnackbarUtils.showShortSnackbar(
                 coordinatorLayout,
-                "onLocationChanged : " + String.valueOf(location.getLatitude()) + " , " + String.valueOf(location.getLongitude())
-        );
+                Constants.TAG_LOCATION_CHANGED + location.getLatitude() + " , " + location.getLongitude());
+        addLocation(location);
+        locationAdapter.notifyDataSetChanged();
     }
 
     private void startLocationUpdates() {
         LocationRequest locationRequest = new LocationRequest();
         locationRequest
                 .setPriority(PRIORITY_HIGH_ACCURACY)
-                .setInterval(LocationHelper.UPDATE_INTERVAL)
-                .setFastestInterval(LocationHelper.UPDATE_INTERVAL / 2)
-                .setSmallestDisplacement(LocationHelper.DISPLACEMENT);
+                .setInterval(Constants.UPDATE_INTERVAL)
+                .setFastestInterval(Constants.UPDATE_INTERVAL / 2)
+                .setSmallestDisplacement(Constants.DISPLACEMENT);
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
@@ -156,5 +172,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .addApi(LocationServices.API)
                 .build();
     }
-}
 
+    private void addLocation(Location location) {
+        String city = Constants.UNKNOWN_CITY;
+        try {
+            city = LocationHelper.getCityFromLocation(this, location.getLatitude(), location.getLongitude());
+        } catch (IOException e) {
+            String errorMessage = e.getLocalizedMessage();
+            Log.e(Constants.TAG_ERROR, errorMessage);
+            if (errorMessage.contains(Constants.TAG_TIMED_OUT)) {
+                SnackbarUtils.showSnackbarWithAction(
+                        coordinatorLayout, Constants.TAG_UNABLE_TO_GET_CITY, Constants.TAG_CONNECT, action -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS))
+                );
+            }
+            e.printStackTrace();
+        }
+        locationList.add(0,
+                new LocationData(city, location.getLatitude() + " , " + location.getLongitude(), new DateTime()
+                )
+        );
+    }
+
+    private void initRecyclerView() {
+        locationList = new ArrayList<>();
+        locationRecycler = (RecyclerView) findViewById(R.id.location_recycler);
+        locationRecycler.setLayoutManager(new LinearLayoutManager(this));
+        locationAdapter = new LocationListAdapter(locationList);
+        locationRecycler.setAdapter(locationAdapter);
+    }
+}
