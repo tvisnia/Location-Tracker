@@ -23,13 +23,12 @@ public class LocationData {
         this.time = dateTime;
     }
 
-
-    public String coordinates;
-    public String city;
-    public DateTime time;
-    DateTimeFormatter dateAndTime = DateTimeFormat.forPattern(Constants.DATE_TIME_FORMAT);
+    public final String coordinates;
+    public final String city;
+    public final DateTime time;
 
     public String getDateAndTime() {
+        DateTimeFormatter dateAndTime = DateTimeFormat.forPattern(Constants.DATE_TIME_FORMAT);
         return dateAndTime.print(time);
     }
 }

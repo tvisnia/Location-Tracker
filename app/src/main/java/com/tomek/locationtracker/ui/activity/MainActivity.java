@@ -20,17 +20,10 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.tomek.locationtracker.R;
-import com.tomek.locationtracker.model.LocationData;
 import com.tomek.locationtracker.ui.recycler.LocationListAdapter;
 import com.tomek.locationtracker.util.Constants;
 import com.tomek.locationtracker.util.LocationHelper;
 import com.tomek.locationtracker.util.SnackbarUtils;
-
-import org.joda.time.DateTime;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY;
 
@@ -41,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private RecyclerView locationRecycler;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
-    private List<LocationData> locationList;
     private LocationListAdapter locationAdapter;
 
 
@@ -89,8 +81,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             SnackbarUtils.showShortSnackbar(
                     coordinatorLayout,
                     Constants.TAG_LAST_LOCATION + String.valueOf(lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
-            addLocation(lastLocation);
-            locationAdapter.notifyDataSetChanged();
+            locationAdapter.addNewItem(lastLocation, this, coordinatorLayout);
         }
     }
 
@@ -113,8 +104,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         SnackbarUtils.showShortSnackbar(
                 coordinatorLayout,
                 Constants.TAG_LOCATION_CHANGED + location.getLatitude() + " , " + location.getLongitude());
-        addLocation(location);
-        locationAdapter.notifyDataSetChanged();
+        locationAdapter.addNewItem(location, this, coordinatorLayout);
     }
 
     private void startLocationUpdates() {
@@ -150,8 +140,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         @Override
                         public void onPositive(MaterialDialog dialog) {
                             Intent locationSettingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            startActivity(locationSettingsIntent);
                             dialog.dismiss();
+                            startActivity(locationSettingsIntent);
+
                         }
 
                         @Override
@@ -173,31 +164,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .build();
     }
 
-    private void addLocation(Location location) {
-        String city = Constants.UNKNOWN_CITY;
-        try {
-            city = LocationHelper.getCityFromLocation(this, location.getLatitude(), location.getLongitude());
-        } catch (IOException e) {
-            String errorMessage = e.getLocalizedMessage();
-            Log.e(Constants.TAG_ERROR, errorMessage);
-            if (errorMessage.contains(Constants.TAG_TIMED_OUT)) {
-                SnackbarUtils.showSnackbarWithAction(
-                        coordinatorLayout, Constants.TAG_UNABLE_TO_GET_CITY, Constants.TAG_CONNECT, action -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS))
-                );
-            }
-            e.printStackTrace();
-        }
-        locationList.add(0,
-                new LocationData(city, location.getLatitude() + " , " + location.getLongitude(), new DateTime()
-                )
-        );
-    }
-
     private void initRecyclerView() {
-        locationList = new ArrayList<>();
         locationRecycler = (RecyclerView) findViewById(R.id.location_recycler);
         locationRecycler.setLayoutManager(new LinearLayoutManager(this));
-        locationAdapter = new LocationListAdapter(locationList);
+        locationAdapter = new LocationListAdapter();
         locationRecycler.setAdapter(locationAdapter);
     }
 }

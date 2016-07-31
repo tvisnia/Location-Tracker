@@ -25,8 +25,7 @@ public class SnackbarUtils {
         Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
                 .setAction(actionText, listener)
                 .setActionTextColor(Color.RED);
-        ((TextView) snackbar
-                .getView()
+        ((TextView) snackbar.getView()
                 .findViewById(android.support.design.R.id.snackbar_text)
         )
                 .setTextColor(Color.YELLOW);
