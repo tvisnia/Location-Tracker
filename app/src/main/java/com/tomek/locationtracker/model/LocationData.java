@@ -17,6 +17,8 @@ import org.joda.time.format.DateTimeFormatter;
  **/
 public class LocationData {
 
+    private static DateTimeFormatter dateAndTime = DateTimeFormat.forPattern(Constants.DATE_TIME_FORMAT);
+
     public LocationData(String city, String coordinates, DateTime dateTime) {
         this.city = city;
         this.coordinates = coordinates;
@@ -28,7 +30,6 @@ public class LocationData {
     public final DateTime time;
 
     public String getDateAndTime() {
-        DateTimeFormatter dateAndTime = DateTimeFormat.forPattern(Constants.DATE_TIME_FORMAT);
         return dateAndTime.print(time);
     }
 }

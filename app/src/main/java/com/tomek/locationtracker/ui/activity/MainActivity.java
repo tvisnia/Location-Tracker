@@ -1,8 +1,11 @@
 package com.tomek.locationtracker.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -20,6 +23,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.tomek.locationtracker.R;
+import com.tomek.locationtracker.service.FetchLocationAddressService;
 import com.tomek.locationtracker.ui.recycler.LocationListAdapter;
 import com.tomek.locationtracker.util.Constants;
 import com.tomek.locationtracker.util.LocationHelper;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private LocationListAdapter locationAdapter;
+    private ResultReceiver cityResultReceiver;
 
 
     @Override
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setSupportActionBar(toolbar);
         initRecyclerView();
         buildGoogleApiClient();
+        cityResultReceiver = new CityResultReceiver(new Handler());
     }
 
     @Override
@@ -81,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             SnackbarUtils.showShortSnackbar(
                     coordinatorLayout,
                     Constants.TAG_LAST_LOCATION + String.valueOf(lastLocation.getLatitude()) + " , " + String.valueOf(lastLocation.getLongitude()));
-            locationAdapter.addNewItem(lastLocation, this, coordinatorLayout);
+            startReverseGeocodingService(lastLocation);
         }
     }
 
@@ -104,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         SnackbarUtils.showShortSnackbar(
                 coordinatorLayout,
                 Constants.TAG_LOCATION_CHANGED + location.getLatitude() + " , " + location.getLongitude());
-        locationAdapter.addNewItem(location, this, coordinatorLayout);
+        startReverseGeocodingService(location);
     }
 
     private void startLocationUpdates() {
@@ -169,5 +175,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         locationRecycler.setLayoutManager(new LinearLayoutManager(this));
         locationAdapter = new LocationListAdapter();
         locationRecycler.setAdapter(locationAdapter);
+    }
+
+    private void startReverseGeocodingService(Location location) {
+        Intent intent = new Intent(this, FetchLocationAddressService.class);
+        intent.putExtra(Constants.KEY_RECEIVER, cityResultReceiver);
+        intent.putExtra(Constants.KEY_LOCATION_DATA_EXTRA, location);
+        startService(intent);
+    }
+
+    @SuppressLint("ParcelCreator")
+    class CityResultReceiver extends ResultReceiver {
+        public CityResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            String city = resultData.getString(Constants.KEY_RESULT_DATA);
+            if (resultCode == Constants.FAILURE_RESULT) {
+                SnackbarUtils.showSnackbarWithAction(coordinatorLayout, Constants.UNABLE_TO_GET_CITY, Constants.CHECKOUT_CONNECTION, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)));
+            }
+            locationAdapter.addNewItem(lastLocation, city);
+        }
     }
 }

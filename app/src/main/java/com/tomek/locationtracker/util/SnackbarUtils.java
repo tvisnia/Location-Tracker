@@ -30,6 +30,5 @@ public class SnackbarUtils {
         )
                 .setTextColor(Color.YELLOW);
         snackbar.show();
-
     }
 }
