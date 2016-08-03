@@ -6,6 +6,8 @@ package com.tomek.locationtracker.util;
  */
 public class Constants {
 
+    private static final String PACKAGE_NAME = "com.tomek.locationtracker";
+
     //Logcat
     public static final String TAG_CONNECTED = "onConnected";
     public static final String TAG_ERROR = "Error occured";
@@ -17,6 +19,8 @@ public class Constants {
     public static final String TAG_LOCATION_CHANGED = "Location has changed : ";
     public static final String UNABLE_TO_GET_CITY = "Unable to get locality";
     public static final String CHECKOUT_CONNECTION = "Check connection";
+    public static final String LOCATION_OFF = "Location off";
+    public static final String TURN_ON = "Turn on";
 
     //Service messaging & results
     public static final String SERVICE_NOT_AVAILABLE = "Service not available";
@@ -28,14 +32,13 @@ public class Constants {
     public static final int SUCCESS_RESULT = 1;
 
     //Keys for an Intent Service
-    public static final String KEY_LOCATION_DATA_EXTRA = "com.tomek.locationtracker.location";
-    public static final String KEY_RESULT_DATA = "com.tomek.locationtracker.result";
-    public static final String KEY_RECEIVER = "com.tomek.locationtracker.resultreceiver";
+    public static final String KEY_LOCATION_DATA_EXTRA = PACKAGE_NAME + ".location";
+    public static final String KEY_RESULT_DATA = PACKAGE_NAME + ".result";
+    public static final String KEY_RECEIVER = PACKAGE_NAME + ".resultreceiver";
 
     //Location values
     public static final float DISPLACEMENT = 25;       // minimum radius of displacement (in meters) to notify onLocationChanged;
     public static final long UPDATE_INTERVAL = 20000; // Update location every 20000
-    public static final double DEFAULT_CORDINATE = 0;
     public static final int MAX_ADRESSES = 1;
 
     //Other

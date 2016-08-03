@@ -21,7 +21,7 @@ import java.util.Locale;
 public class FetchLocationAddressService extends IntentService {
 
     public static final String TAG = FetchLocationAddressService.class.getSimpleName();
-    protected ResultReceiver resultReceiver;
+    private ResultReceiver serviceDataReceiver;
 
     public FetchLocationAddressService() {
         super(TAG);
@@ -32,7 +32,7 @@ public class FetchLocationAddressService extends IntentService {
         String errorMessage = "";
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         Location location = intent.getParcelableExtra(Constants.KEY_LOCATION_DATA_EXTRA);
-        resultReceiver = intent.getParcelableExtra(Constants.KEY_RECEIVER);
+        serviceDataReceiver = intent.getParcelableExtra(Constants.KEY_RECEIVER);
         List<Address> addresses = null;
         if (location != null) {
             try {
@@ -52,8 +52,7 @@ public class FetchLocationAddressService extends IntentService {
                 Log.e(TAG, errorMessage);
             }
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
-        }
-        else {
+        } else {
             String city = addresses.get(0).getLocality();
             Log.i(TAG, Constants.ADDRESS_FOUND);
             deliverResultToReceiver(Constants.SUCCESS_RESULT, city);
@@ -68,6 +67,6 @@ public class FetchLocationAddressService extends IntentService {
             result = message;
         }
         bundle.putString(Constants.KEY_RESULT_DATA, result);
-        resultReceiver.send(resultCode, bundle);
+        serviceDataReceiver.send(resultCode, bundle);
     }
 }

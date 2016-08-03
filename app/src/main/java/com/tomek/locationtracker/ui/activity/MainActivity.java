@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Location lastLocation;
     private LocationListAdapter locationAdapter;
     private ResultReceiver cityResultReceiver;
-
+    private MaterialDialog checkLocationDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         initRecyclerView();
+        buildCheckLocationDialog();
         buildGoogleApiClient();
         cityResultReceiver = new CityResultReceiver(new Handler());
     }
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStart() {
         super.onStart();
-        checkLocationServices();
+        checkLocationAvailability();
         if (googleApiClient != null) {
             googleApiClient.connect();
         }
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-        checkLocationServices();
+        checkLocationAvailability();
     }
 
     @Override
@@ -127,39 +128,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
     }
 
-    private void checkLocationServices() {
-        if (!LocationHelper.isLocationEnabled(this)) {
-            new MaterialDialog.Builder(this)
-                    .title(R.string.dialog_title)
-                    .content(R.string.dialog_content)
-                    .positiveText(R.string.agree)
-                    .negativeText(R.string.disagree)
-                    .keyListener((dialog, keyCode, event) -> {
-                                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                    dialog.dismiss();
-                                    finish();
-                                    return true;
-                                } else return false;
-                            }
-                    )
-                    .callback(new MaterialDialog.ButtonCallback() {
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            Intent locationSettingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            dialog.dismiss();
-                            startActivity(locationSettingsIntent);
-
-                        }
-
-                        @Override
-                        public void onNegative(MaterialDialog dialog) {
-                            finish();
-                        }
-                    })
-                    .autoDismiss(false)
-                    .build()
-                    .show();
-        }
+    private void startReverseGeocodingService(Location location) {
+        Intent intent = new Intent(this, FetchLocationAddressService.class);
+        intent.putExtra(Constants.KEY_RECEIVER, cityResultReceiver);
+        intent.putExtra(Constants.KEY_LOCATION_DATA_EXTRA, location);
+        startService(intent);
     }
 
     private void buildGoogleApiClient() {
@@ -177,13 +150,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         locationRecycler.setAdapter(locationAdapter);
     }
 
-    private void startReverseGeocodingService(Location location) {
-        Intent intent = new Intent(this, FetchLocationAddressService.class);
-        intent.putExtra(Constants.KEY_RECEIVER, cityResultReceiver);
-        intent.putExtra(Constants.KEY_LOCATION_DATA_EXTRA, location);
-        startService(intent);
-    }
-
     @SuppressLint("ParcelCreator")
     class CityResultReceiver extends ResultReceiver {
         public CityResultReceiver(Handler handler) {
@@ -196,7 +162,52 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             if (resultCode == Constants.FAILURE_RESULT) {
                 SnackbarUtils.showSnackbarWithAction(coordinatorLayout, Constants.UNABLE_TO_GET_CITY, Constants.CHECKOUT_CONNECTION, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)));
             }
-            locationAdapter.addNewItem(lastLocation, city);
+            Log.d(TAG, lastLocation + city + locationRecycler);
+            if (lastLocation != null)
+                locationAdapter.addNewItem(lastLocation, city, locationRecycler);
         }
+    }
+
+    private void displayLocationSettings() {
+        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+    }
+
+    private void checkLocationAvailability() {
+        if (!LocationHelper.isLocationEnabled(this) && !checkLocationDialog.isShowing()) {
+            checkLocationDialog.show();
+        }
+    }
+
+    private void buildCheckLocationDialog() {
+        MaterialDialog.Builder checkLocationDialogBuilder = new MaterialDialog.Builder(this);
+        checkLocationDialogBuilder
+                .title(R.string.dialog_title)
+                .content(R.string.dialog_content)
+                .positiveText(R.string.agree)
+                .negativeText(R.string.cancel)
+                .autoDismiss(false)
+                .cancelable(false)
+                .keyListener((dialog, keyCode, event) -> {
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                dialog.dismiss();
+                                finish();
+                                return true;
+                            } else return false;
+                        }
+                )
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        dialog.dismiss();
+                        displayLocationSettings();
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        dialog.dismiss();
+                        SnackbarUtils.showSnackbarWithAction(coordinatorLayout, Constants.LOCATION_OFF, Constants.TURN_ON, v -> displayLocationSettings());
+                    }
+                });
+        checkLocationDialog = checkLocationDialogBuilder.build();
     }
 }
