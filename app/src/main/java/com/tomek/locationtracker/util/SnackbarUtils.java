@@ -6,8 +6,6 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * Created by tomek on 21.07.16.
- * <p>
  * An util class for an easy access to Android Snackbar component used to provide a graphical
  * feedback about operation
  **/

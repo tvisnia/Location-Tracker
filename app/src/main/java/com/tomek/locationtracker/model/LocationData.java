@@ -7,28 +7,34 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 /**
- * Created by tomek on 28.07.16.
- * <p>
- * A model class containing information about given location:
- * <p>
- * city - name of city derived from coordinates (requires internet connection )
- * coordinates - geographical longitude and lattitude
- * dateTime - date and time of last got location
+ * A model class containing information about given location.
  **/
 public class LocationData {
+    /** The formatter parsing given DateTime object to a String with a DATE_TIME_FORMAT pattern. */
+    private static final DateTimeFormatter dateAndTime = DateTimeFormat.forPattern(Constants.DATE_TIME_FORMAT);
 
-    private static DateTimeFormatter dateAndTime = DateTimeFormat.forPattern(Constants.DATE_TIME_FORMAT);
+    /** Geographical longitude and lattitude concatenated as a String object. */
+    public final String coordinates;
+    /** The name of city derived from coordinates (requires internet connection). */
+    public final String city;
+    /** The date and time of given location. */
+    public final DateTime time;
 
+
+    /**
+     * Constructor.
+     */
     public LocationData(String city, String coordinates, DateTime dateTime) {
         this.city = city;
         this.coordinates = coordinates;
         this.time = dateTime;
     }
 
-    public final String coordinates;
-    public final String city;
-    public final DateTime time;
-
+    /**
+     * Gets date and time from a DateTime field
+     *
+     * @return date and time parsed to a String object
+     */
     public String getDateAndTime() {
         return dateAndTime.print(time);
     }

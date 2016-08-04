@@ -7,9 +7,6 @@ import android.location.LocationManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
-/**
- * Created by tomek on 16.07.16.
- */
 public class LocationHelper {
 
     public static boolean isLocationEnabled(Context context) {

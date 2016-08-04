@@ -15,9 +15,6 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by tomek on 28.07.16.
- */
 public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapter.ViewHolder> {
 
     private List<LocationData> locationList;

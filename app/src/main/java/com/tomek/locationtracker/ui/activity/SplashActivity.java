@@ -8,9 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Created by tomek on 08.07.16.
- */
 public class SplashActivity extends AppCompatActivity {
 
     private static final long SPLASH_DISPLAY_LENGTH = 2000;

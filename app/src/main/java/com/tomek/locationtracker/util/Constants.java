@@ -1,9 +1,5 @@
 package com.tomek.locationtracker.util;
 
-/**
- * Created by tomek on 29.07.16.
- * </p>
- */
 public class Constants {
 
     private static final String PACKAGE_NAME = "com.tomek.locationtracker";

@@ -16,8 +16,7 @@
         android:id="@+id/location_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="10sp"
-        >
+        android:layout_marginBottom="10sp">
     </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

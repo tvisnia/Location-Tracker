@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by tomek on 01.08.16.
- */
 public class FetchLocationAddressService extends IntentService {
 
     public static final String TAG = FetchLocationAddressService.class.getSimpleName();
@@ -56,7 +53,6 @@ public class FetchLocationAddressService extends IntentService {
             String city = addresses.get(0).getLocality();
             Log.i(TAG, Constants.ADDRESS_FOUND);
             deliverResultToReceiver(Constants.SUCCESS_RESULT, city);
-
         }
     }
 

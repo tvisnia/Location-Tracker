@@ -142,14 +142,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .addApi(LocationServices.API)
                 .build();
     }
-
-    private void initRecyclerView() {
-        locationRecycler = (RecyclerView) findViewById(R.id.location_recycler);
-        locationRecycler.setLayoutManager(new LinearLayoutManager(this));
-        locationAdapter = new LocationListAdapter();
-        locationRecycler.setAdapter(locationAdapter);
-    }
-
     @SuppressLint("ParcelCreator")
     class CityResultReceiver extends ResultReceiver {
         public CityResultReceiver(Handler handler) {
@@ -162,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             if (resultCode == Constants.FAILURE_RESULT) {
                 SnackbarUtils.showSnackbarWithAction(coordinatorLayout, Constants.UNABLE_TO_GET_CITY, Constants.CHECKOUT_CONNECTION, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)));
             }
-            Log.d(TAG, lastLocation + city + locationRecycler);
             if (lastLocation != null)
                 locationAdapter.addNewItem(lastLocation, city, locationRecycler);
         }
@@ -209,5 +200,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     }
                 });
         checkLocationDialog = checkLocationDialogBuilder.build();
+    }
+
+    private void initRecyclerView() {
+        locationRecycler = (RecyclerView) findViewById(R.id.location_recycler);
+        locationRecycler.setLayoutManager(new LinearLayoutManager(this));
+        locationAdapter = new LocationListAdapter();
+        locationRecycler.setAdapter(locationAdapter);
     }
 }
