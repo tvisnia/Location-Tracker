@@ -1,7 +1,5 @@
 package com.tomek.locationtracker.model;
 
-import android.location.Location;
-
 import com.tomek.locationtracker.util.Constants;
 
 /**
@@ -9,14 +7,16 @@ import com.tomek.locationtracker.util.Constants;
  */
 public final class Coordinate {
 
-public final Location location;
+    public final double lattitude;
+    public final double longitude;
 
-    public Coordinate(Location location) {
-        this.location = location;
+    public Coordinate(double lattitude, double longitude) {
+        this.lattitude = lattitude;
+        this.longitude = longitude;
     }
 
     @Override
     public String toString() {
-        return location.getLatitude() + Constants.STRING_SEPARATOR + location.getLongitude();
+        return longitude + Constants.STRING_SEPARATOR + lattitude;
     }
 }

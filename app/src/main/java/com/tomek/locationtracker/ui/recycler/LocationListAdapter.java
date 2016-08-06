@@ -25,7 +25,7 @@ public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapte
     }
 
     public void addNewItem(Location location, String city, RecyclerView recycler) {
-        locationList.add(0, new LocationData(city, new Coordinate(location).toString(), DateTime.now()));
+        locationList.add(0, new LocationData(city, new Coordinate(location.getLatitude(), location.getLongitude()).toString(), DateTime.now()));
         notifyItemInserted(0);
         recycler.smoothScrollToPosition(0);
     }
