@@ -17,7 +17,7 @@ import java.util.Locale;
 
 public class FetchLocationAddressService extends IntentService {
 
-    public static final String TAG = FetchLocationAddressService.class.getSimpleName();
+    private static final String TAG = FetchLocationAddressService.class.getSimpleName();
     private ResultReceiver serviceDataReceiver;
 
     public FetchLocationAddressService() {
@@ -43,7 +43,7 @@ public class FetchLocationAddressService extends IntentService {
             }
         }
 
-        if (addresses == null || addresses.size() == 0) {
+        if (addresses == null || addresses.isEmpty()) {
             if (errorMessage.isEmpty()) {
                 errorMessage = Constants.NO_ADDRESSES_FOUND;
                 Log.e(TAG, errorMessage);

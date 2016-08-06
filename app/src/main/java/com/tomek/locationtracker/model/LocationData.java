@@ -35,8 +35,7 @@ public class LocationData {
 
     /**
      * Constructor.
-     *
-     * @param city        value for {@link #city}
+     *  @param city        value for {@link #city}
      * @param coordinates value for {@link #coordinates}
      * @param dateTime    value for {@link #time}
      */
