@@ -7,16 +7,16 @@ import com.tomek.locationtracker.util.Constants;
  */
 public final class Coordinate {
 
-    public final double lattitude;
+    public final double latitude;
     public final double longitude;
 
-    public Coordinate(double lattitude, double longitude) {
-        this.lattitude = lattitude;
+    public Coordinate(double longitude, double latitude) {
+        this.latitude = latitude;
         this.longitude = longitude;
     }
 
     @Override
     public String toString() {
-        return longitude + Constants.STRING_SEPARATOR + lattitude;
+        return longitude + Constants.STRING_SEPARATOR + latitude;
     }
 }

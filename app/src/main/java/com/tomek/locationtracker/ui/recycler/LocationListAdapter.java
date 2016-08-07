@@ -25,7 +25,7 @@ public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapte
     }
 
     public void addNewItem(Location location, String city, RecyclerView recycler) {
-        locationList.add(0, new LocationData(city, new Coordinate(location.getLatitude(), location.getLongitude()).toString(), DateTime.now()));
+        locationList.add(0, new LocationData(city, location, DateTime.now(), new Coordinate(location.getLongitude(), location.getLatitude())));
         notifyItemInserted(0);
         recycler.smoothScrollToPosition(0);
     }
@@ -62,10 +62,10 @@ public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapte
 
         }
 
-        public void bind(LocationData listItem) {
-            city.setText(listItem.city);
-            coordinates.setText(listItem.coordinates);
-            dateAndTime.setText(listItem.getDateAndTime());
+        public void bind(LocationData locationListItem) {
+            city.setText(locationListItem.city);
+            coordinates.setText(locationListItem.coordinate.toString());
+            dateAndTime.setText(locationListItem.getDateAndTime());
         }
     }
 }

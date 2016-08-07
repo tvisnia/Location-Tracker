@@ -1,5 +1,7 @@
 package com.tomek.locationtracker.model;
 
+import android.location.Location;
+
 import com.tomek.locationtracker.util.Constants;
 
 import org.joda.time.DateTime;
@@ -8,7 +10,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 /**
  * Location model object
- *
+ * <p>
  * <P> Contains attributes of received location.
  *
  * @author Tomasz Wisniewski
@@ -21,9 +23,9 @@ public class LocationData {
     private static final DateTimeFormatter dateAndTime = DateTimeFormat.forPattern(Constants.DATE_TIME_FORMAT);
 
     /**
-     * Geographical longitude and lattitude concatenated as a String object.
+     * Location object.
      */
-    public final String coordinates;
+    public final Location location;
     /**
      * The name of city derived from reverse geocoding service.
      */
@@ -34,15 +36,23 @@ public class LocationData {
     public final DateTime time;
 
     /**
-     * Constructor.
-     *  @param city        value for {@link #city}
-     * @param coordinates value for {@link #coordinates}
-     * @param dateTime    value for {@link #time}
+     * Geographical longitude and latitude
      */
-    public LocationData(String city, String coordinates, DateTime dateTime) {
+    public final Coordinate coordinate;
+
+    /**
+     * Constructor.
+     *
+     * @param city       value for {@link #city}
+     * @param location   value for {@link #location}
+     * @param dateTime   value for {@link #time}
+     * @param coordinate value for {@link #coordinate}
+     */
+    public LocationData(String city, Location location, DateTime dateTime, Coordinate coordinate) {
         this.city = city;
-        this.coordinates = coordinates;
+        this.location = location;
         this.time = dateTime;
+        this.coordinate = coordinate;
     }
 
     /**
